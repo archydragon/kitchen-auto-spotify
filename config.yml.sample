@@ -1,0 +1,38 @@
+# ----------------------------
+# REQUIRED PARAMETERS
+
+# PIR pin number. Use GPIO numeration, not general one! So for pin number 7 marked as GPIO4 you should put 4 here.
+pir_pin: 4
+
+# Create a new client at https://developer.spotify.com/dashboard/applications then put its ID and secret key here.
+client_id: '********************************'
+client_secret: '________________________________'
+
+# Visible name of Spotify playback device (not ID!)
+device_name: raspberry
+
+
+# ----------------------------
+# OPTIONAL PARAMETERS
+
+# For how long activity should be detected by sensor before start playback. In seconds
+presence_delay: 60  # default 60
+
+# For how long there should be no activity detected by sensor before stop playback. In seconds
+inactivity_delay: 600  # default 600 (10 minutes)
+
+# Country to use categories and playlists from. Use the country code from https://en.wikipedia.org/wiki/ISO_3166-1_alpha-2
+# Will raise an exception if Spotify does not work in that country officially. If set to null, global data will be used.
+country: FI   # default null
+
+# Enable shuffle before beginning the playback.
+shuffle: yes  # default no
+
+# Set specific volume level before beginning the playback.
+volume: 90    # default 100
+
+# If those parameters are set, timed night mode is enabled. Music won't play during specified time interval.
+# Format: HH:MM, leading zero for hours can be omitted.
+# If at least one of those parameters is not set, night mode is disabled!
+night_starts: '22:00' # default null
+night_ends:   '7:00'  # default null
