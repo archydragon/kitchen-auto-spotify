@@ -38,7 +38,7 @@ class Motion:
                 self.now_playing = True
                 play(self.config)
             elif presence_time > self.config['presence_delay'] + 10:
-                flush_state()
+                self.flush_state()
                 self.first_detect = datetime.now()
 
     def check_inactivity(self):
