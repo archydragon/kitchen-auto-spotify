@@ -22,24 +22,24 @@ class Motion:
         Callback for detected motion event received from GPIO.
         _pir_pin argument is never used, there is the only data pin used.
         """
+        self.last_detect = datetime.now()
         # If not playing now, check if we should start.
         if not self.now_playing:
             # If it was the first detect during some time, just record it.
             if not self.first_detect:
                 self.first_detect = datetime.now()
+
             # If it wasn't the first one, check how long ago was the first one.
-            else:
-                self.last_detect = datetime.now()
-                presence_time = (self.last_detect - self.first_detect).total_seconds()
-                # 10 seconds is PIR sensor margin of error. If someone was detected in the beginning and in the end
-                # of presence delay, it means that there is the same person moving nearby constantly. Start playing.
-                if presence_time >= self.config['presence_delay'] and presence_time <= self.config['presence_delay'] + 10:
-                    print(f"Persistent activity for last {self.config['presence_delay']} seconds detected.")
-                    self.now_playing = True
-                    play(self.config)
-        # If playing now, just update last detected time.
-        else:
-            self.last_detect = datetime.now()
+            presence_time = (self.last_detect - self.first_detect).total_seconds()
+            # 10 seconds is PIR sensor margin of error. If someone was detected in the beginning and in the end
+            # of presence delay, it means that there is the same person moving nearby constantly. Start playing.
+            if presence_time >= self.config['presence_delay'] and presence_time <= self.config['presence_delay'] + 10:
+                print(f"Persistent activity for last {self.config['presence_delay']} seconds detected.")
+                self.now_playing = True
+                play(self.config)
+            elif presence_time > self.config['presence_delay'] + 10:
+                flush_state()
+                self.first_detect = datetime.now()
 
     def check_inactivity(self):
         """
