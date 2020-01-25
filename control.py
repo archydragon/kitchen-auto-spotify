@@ -1,6 +1,5 @@
 import logging
 import sys
-from datetime import datetime
 from random import choice
 import spotipy
 from auth import get_valid_access_token
@@ -37,27 +36,6 @@ def play(config=None):
     # Create a new Spotify API client based on the token we have.
     client = spotipy.Spotify(auth=access_token)
     log.debug("Spotify client created.")
-
-    # If night mode is configured, check if it is not too late.
-    if 'night_starts' in config and 'night_ends' in config:
-        now = datetime.now()
-        pns = datetime.strptime(config['night_starts'], '%H:%M')
-        pne = datetime.strptime(config['night_ends'], '%H:%M')
-        night_starts = datetime.now().replace(hour=pns.hour, minute=pns.minute, second=0, microsecond=0)
-        night_ends = datetime.now().replace(hour=pne.hour, minute=pne.minute, second=0, microsecond=0)
-        # If it's later than night start timestamp.
-        if night_starts <= now:
-            # If night starts before midnight, it should end the next day.
-            if night_starts > night_ends:
-                night_ends = night_ends.replace(day=night_ends.day+1)
-            # If the night not ended yet, quit.
-            if night_ends >= now:
-                log.info("It's too late, don't do anything.")
-                return
-        # Otherwise check if it's earlier than night end timestamp and exit if it is true.
-        elif night_ends >= now:
-            log.info("It's too late, don't do anything.")
-            return
 
     # Find the device to play music on.
     try:

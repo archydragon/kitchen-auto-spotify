@@ -4,6 +4,7 @@ from datetime import datetime
 import RPi.GPIO as GPIO
 from config import read_config
 from control import play, pause
+from helpers import is_night_now
 
 class Motion:
     """
@@ -39,6 +40,10 @@ class Motion:
             # of presence delay, it means that there is the same person moving nearby constantly. Start playing.
             if presence_time >= self.config['presence_delay'] and presence_time <= self.config['presence_delay'] + 10:
                 self.log.info(f"Persistent activity for last {self.config['presence_delay']} seconds detected.")
+                if 'night_starts' in self.config and 'night_ends' in self.config:
+                    if is_night_now(self.config['night_starts'], self.config['night_ends']):
+                        self.log.info("It's too late, don't do anything.")
+                        return
                 self.now_playing = True
                 play(self.config)
             elif presence_time > self.config['presence_delay'] + 10:
