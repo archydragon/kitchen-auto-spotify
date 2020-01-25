@@ -44,8 +44,7 @@ class Motion:
                     if is_night_now(self.config['night_starts'], self.config['night_ends']):
                         self.log.info("It's too late, don't do anything.")
                         return
-                self.now_playing = True
-                play(self.config)
+                self.now_playing = play(self.config)
             elif presence_time > self.config['presence_delay'] + 10:
                 self.log.debug("Previous presence was detected too long ago.")
                 self.flush_state()

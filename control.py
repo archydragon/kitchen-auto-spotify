@@ -42,13 +42,13 @@ def play(config=None):
         device_id = get_device_id(client, config['device_name'])
     except Exception as e:
         log.critical(f"Failed to get Spotify device ID: {e}")
-        return
+        return False
 
     # Check if playback is active now.
     playback = client.current_playback()
     if playback and 'is_playing' in playback and playback['is_playing']:
         log.info("Playing something somewhere already.")
-        return
+        return False
 
     # Get a random category and a random playlist from it.
     category = None
@@ -77,6 +77,7 @@ def play(config=None):
     # Start actual playback of the playlist we found before.
     log.info(f"Starting playback.")
     client.start_playback(device_id=device_id, context_uri=playlist['uri'])
+    return True
 
 def pause(config=None):
     """
