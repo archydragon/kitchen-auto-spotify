@@ -69,7 +69,8 @@ def play(config=None):
             log.info("Found some category with no playlists, skipping.")
 
     # Enable shuffle.
-    log.debug("Enabling shuffle.")
+    if config['shuffle']:
+        log.debug("Enabling shuffle.")
     client.shuffle(config['shuffle'], device_id=device_id)
     # Set volumne.
     log.debug(f"Setting volume to {config['volume']}.")
