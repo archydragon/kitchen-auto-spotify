@@ -7,6 +7,7 @@ CONFIG_ROOT = os.path.expanduser("~/.config/kitchen")
 CONFIG = os.path.join(CONFIG_ROOT, "config.yml")
 
 CONFIG_SCHEMA = {
+    'debug_mode':       {'type': 'boolean', 'default': False},
     'pir_pin':          {'type': 'number', 'required': True},
     'client_id':        {'type': 'string', 'required': True},
     'client_secret':    {'type': 'string', 'required': True},

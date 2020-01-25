@@ -15,6 +15,9 @@ device_name: raspberry
 # ----------------------------
 # OPTIONAL PARAMETERS
 
+# Extra logging of debug information
+debug_mode: no
+
 # For how long activity should be detected by sensor before start playback. In seconds
 presence_delay: 60  # default 60
 

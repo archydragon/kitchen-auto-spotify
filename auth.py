@@ -1,3 +1,4 @@
+import logging
 import os
 import yaml
 import spotipy
@@ -49,6 +50,9 @@ def get_valid_access_token(config=None):
     """
     Get valid Spotify Oauth access token.
     """
+    # Enable logging.
+    log = logging.getLogger('root')
+    # Read config.
     if not config:
         config = read_config()
     # Read Oauth token from saved file. If read fails, generate a new one.
@@ -57,11 +61,11 @@ def get_valid_access_token(config=None):
         with open(TOKEN_INFO, 'r') as file:
             token_info = yaml.load(file, Loader=yaml.FullLoader)
     except FileNotFoundError:
-        print("No existing token file found, need to create a new one.")
+        log.info("No existing token file found, need to create a new one.")
         token_info = new_token(config['client_id'], config['client_secret'])
     # If the token has expired, refresh it.
     if spotipy.oauth2.is_token_expired(token_info):
-        print("Token has expired, refreshing.")
+        log.info("Token has expired, refreshing.")
         token_info = refresh_token(config['client_id'], config['client_secret'], token_info['refresh_token'])
     # Save token info to the file.
     with open(TOKEN_INFO, 'w') as file:

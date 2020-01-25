@@ -1,3 +1,4 @@
+import logging
 import time
 from datetime import datetime
 import RPi.GPIO as GPIO
@@ -8,11 +9,13 @@ class Motion:
     """
     Class to control motion detection logic. Needed just to avoid of using globals.
     """
-    def __init__(self, config):
+    def __init__(self, config, log):
         self.config = config
+        self.log = log
         self.flush_state()
 
     def flush_state(self):
+        self.log.debug("Movement information reset.")
         self.now_playing = False
         self.first_detect = None
         self.last_detect = None
@@ -22,6 +25,7 @@ class Motion:
         Callback for detected motion event received from GPIO.
         _pir_pin argument is never used, there is the only data pin used.
         """
+        self.log.debug("Movement detected.")
         self.last_detect = datetime.now()
         # If not playing now, check if we should start.
         if not self.now_playing:
@@ -34,10 +38,11 @@ class Motion:
             # 10 seconds is PIR sensor margin of error. If someone was detected in the beginning and in the end
             # of presence delay, it means that there is the same person moving nearby constantly. Start playing.
             if presence_time >= self.config['presence_delay'] and presence_time <= self.config['presence_delay'] + 10:
-                print(f"Persistent activity for last {self.config['presence_delay']} seconds detected.")
+                self.log.info(f"Persistent activity for last {self.config['presence_delay']} seconds detected.")
                 self.now_playing = True
                 play(self.config)
             elif presence_time > self.config['presence_delay'] + 10:
+                self.log.debug("Previous presence was detected too long ago.")
                 self.flush_state()
                 self.first_detect = datetime.now()
 
@@ -50,7 +55,7 @@ class Motion:
             self.inactivity_time = (datetime.now() - self.last_detect).total_seconds()
             # If last activity was too long ago, stop playing and flush state.
             if self.inactivity_time > self.config['inactivity_delay'] and self.now_playing:
-                print("No one is moving around and listening.")
+                self.log.info("No one is moving around and listening.")
                 self.flush_state()
                 pause(self.config)
 
@@ -59,20 +64,22 @@ def pir_detector(config=None):
     """
     Main entrypoint.
     """
+    # Enable logging.
+    log = logging.getLogger('root')
     # Read config.
     if not config:
         config = read_config()
     # Create a new Motion object.
-    motion = Motion(config)
+    motion = Motion(config, log)
 
     # Configure GPIO.
+    log.debug("Setting GPIO to BCM mode.")
     GPIO.setmode(GPIO.BCM)
     GPIO.setup(config['pir_pin'], GPIO.IN)
 
-    print("Starting application, press Ctrl+C to interrupt.")
-    print(f"Using PIR pin number {config['pir_pin']}.")
+    log.info(f"Using PIR pin number {config['pir_pin']}.")
     time.sleep(1)
-    print('Ready.')
+    log.info('Ready.')
 
     # Main loop.
     try:
@@ -86,5 +93,5 @@ def pir_detector(config=None):
 
     # Cleanup on Ctrl+C.
     except KeyboardInterrupt:
-        print('Terminated.')
+        log.debug("Doing GPIO cleanup.")
         GPIO.cleanup()
