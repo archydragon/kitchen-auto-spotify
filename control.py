@@ -110,6 +110,7 @@ def pause(config=None):
         log.info("Stopping playback.")
         client.pause_playback(device_id)
         return
+    log.debug("The playback has been already stopped or transferred to another device.")
 
 if __name__ == '__main__':
     play()
