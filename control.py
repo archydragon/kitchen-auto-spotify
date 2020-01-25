@@ -59,14 +59,14 @@ def play(config=None):
             categories_resp = client.categories(limit=50, country=config['country'])
             log.debug(f"Found {len(categories_resp['categories']['items'])} categories.")
             category = choice(categories_resp['categories']['items'])
+            log.info(f"Category: {category['name']}")
+
             playlists_resp = client.category_playlists(category_id=category['id'], country=config['country'])
             log.debug(f"Found {len(playlists_resp['playlists']['items'])} playlists in the category.")
             playlist = choice(playlists_resp['playlists']['items'])
+            log.info(f"Playlist: {playlist['name']}")
         except IndexError:
             log.info("Found some category with no playlists, skipping.")
-
-    log.info(f"Category: {category['name']}")
-    log.info(f"Playlist: {playlist['name']}")
 
     # Enable shuffle.
     log.debug("Enabling shuffle.")
